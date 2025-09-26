@@ -7,21 +7,32 @@ import { RegistrationPageLayout } from "@/components/layout/registration-page-la
 import { recruiterNavigationItems } from "@/lib/data"
 import { setRecruiterStepComplete, calcRecruiterProgressPercent } from "@/lib/progress"
 
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select"
+
 export default function CompanyDetailsPage() {
-  const router = useRouter();
+  const router = useRouter()
   const [formData, setFormData] = useState({
     gstDetails: "",
     companyWebsite: "",
     linkedinPage: "",
     companySize: "Software company",
     companyType: "",
-  });
+  })
 
   const companyTypes = [
     {
       id: "startup",
       title: "Startup",
-      description: "A young company focused on innovation and rapid growth, often exploring new markets.",
+      description:
+        "A young company focused on innovation and rapid growth, often exploring new markets.",
     },
     {
       id: "sme",
@@ -31,9 +42,10 @@ export default function CompanyDetailsPage() {
     {
       id: "mnc",
       title: "MNC",
-      description: "A large organization operating in multiple countries with established global influence",
+      description:
+        "A large organization operating in multiple countries with established global influence",
     },
-  ];
+  ]
 
   // Track progress for step completion
   const requiredFields: (keyof typeof formData)[] = [
@@ -41,23 +53,19 @@ export default function CompanyDetailsPage() {
     "companyWebsite",
     "linkedinPage",
     "companySize",
-    "companyType"
-  ];
+    "companyType",
+  ]
   const allFilled = requiredFields.every((key) => {
-    const v = formData[key];
-    if (typeof v === "string") return v.trim().length > 0;
-    return !!v;
-  });
+    const v = formData[key]
+    if (typeof v === "string") return v.trim().length > 0
+    return !!v
+  })
 
   if (typeof window !== "undefined") {
-    setRecruiterStepComplete("companyDetails", allFilled);
+    setRecruiterStepComplete("companyDetails", allFilled)
   }
 
-  const percent = typeof window !== "undefined" ? calcRecruiterProgressPercent() : 0;
-
-  // Common class for all text fields and select
-  const inputClasses =
-    "bg-slate-900 border border-white text-white placeholder:text-gray-400 rounded-lg px-4 py-3 text-base focus:outline-none focus:border-red-500 focus:ring-0 w-full appearance-none";
+  const percent = typeof window !== "undefined" ? calcRecruiterProgressPercent() : 0
 
   return (
     <PageLayout navigationItems={recruiterNavigationItems}>
@@ -67,47 +75,65 @@ export default function CompanyDetailsPage() {
         currentStep={2}
         completionPercentage={percent}
       >
-        <div className="space-y-6">
+        <div className="flex flex-col gap-4">
           {/* GST Details */}
           <div>
-            <label className="block text-white text-sm font-medium mb-3">GST Details</label>
-            <input
+            <Label className="text-white mb-2">GST Details</Label>
+            <Input
               type="text"
               value={formData.gstDetails}
               onChange={(e) => setFormData({ ...formData, gstDetails: e.target.value })}
-              className={inputClasses}
+              placeholder="Enter GST number"
             />
           </div>
 
           {/* Company Website */}
           <div>
-            <label className="block text-white text-sm font-medium mb-3">Company Website</label>
-            <input
+            <Label className="text-white mb-2">Company Website</Label>
+            <Input
               type="text"
               value={formData.companyWebsite}
               onChange={(e) => setFormData({ ...formData, companyWebsite: e.target.value })}
-              className={inputClasses}
+              placeholder="Enter company website URL"
             />
           </div>
 
           {/* LinkedIn Page */}
           <div>
-            <label className="block text-white text-sm font-medium mb-3">LinkedIn Page</label>
-            <input
+            <Label className="text-white mb-2">LinkedIn Page</Label>
+            <Input
               type="text"
               value={formData.linkedinPage}
               onChange={(e) => setFormData({ ...formData, linkedinPage: e.target.value })}
-              className={inputClasses}
+              placeholder="Enter LinkedIn page URL"
             />
           </div>
 
           {/* Company Size */}
-        
+          <div>
+            <Label className="text-white mb-2">Company Size</Label>
+            <Select
+              value={formData.companySize}
+              onValueChange={(value) => setFormData({ ...formData, companySize: value })}
+            >
+              <SelectTrigger className="w-full ">
+                <SelectValue placeholder="Select company size" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Software company">Software company</SelectItem>
+                <SelectItem value="1-10">1-10 employees</SelectItem>
+                <SelectItem value="11-50">11-50 employees</SelectItem>
+                <SelectItem value="51-200">51-200 employees</SelectItem>
+                <SelectItem value="201-500">201-500 employees</SelectItem>
+                <SelectItem value="500+">500+ employees</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Company Type Selection */}
-          <div className="grid grid-cols-3 gap-4 mt-8">
+          <div className="grid grid-cols-3 gap-4 mt-6">
             {companyTypes.map((type) => {
-              const isSelected = formData.companyType === type.id;
+              const isSelected = formData.companyType === type.id
               return (
                 <div
                   key={type.id}

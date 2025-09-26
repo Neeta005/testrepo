@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation"
 import { PageLayout } from "@/components/layout/page-layout"
 import { RegistrationPageLayout } from "@/components/layout/registration-page-layout"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select"
 import { InteractiveMap } from "@/components/ui/interactive-map"
 import { recruiterNavigationItems } from "@/lib/data"
 import { setRecruiterStepComplete, calcRecruiterProgressPercent } from "@/lib/progress"
@@ -44,13 +51,9 @@ export default function CompanyAddressPage() {
     }))
   }
 
-  const handleClearField = (field: string) => {
+  const handleClearField = (field: keyof typeof formData) => {
     setFormData((prev) => ({ ...prev, [field]: "" }))
   }
-
-  // Common input class
-  const inputClasses =
-    "bg-slate-900 border border-white text-white placeholder:text-gray-400 rounded-lg px-4 py-3 text-base focus:outline-none focus:border-red-500 focus:ring-0 w-full transition-colors"
 
   return (
     <PageLayout navigationItems={recruiterNavigationItems}>
@@ -71,7 +74,7 @@ export default function CompanyAddressPage() {
                   placeholder="Search location..."
                   value={formData.addressLine1}
                   onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
-                  className="bg-slate-900 text-white h-10 px-4 rounded-lg shadow-md border border-white focus:border-red-500"
+                  className="h-12"
                 />
               </div>
 
@@ -92,10 +95,10 @@ export default function CompanyAddressPage() {
               {/* Address Line 1 */}
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">Address Line 1</label>
-                <input
+                <Input
                   value={formData.addressLine1}
                   onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
-                  className={inputClasses}
+                  className="h-12"
                 />
               </div>
 
@@ -104,10 +107,10 @@ export default function CompanyAddressPage() {
                 <div>
                   <label className="block text-gray-300 text-sm font-medium mb-2">City</label>
                   <div className="relative">
-                    <input
+                    <Input
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className={`${inputClasses} pr-14`}
+                      className="h-12 pr-14"
                     />
                     <button
                       onClick={() => handleClearField("city")}
@@ -121,10 +124,10 @@ export default function CompanyAddressPage() {
                 <div>
                   <label className="block text-gray-300 text-sm font-medium mb-2">State</label>
                   <div className="relative">
-                    <input
+                    <Input
                       value={formData.state}
                       onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                      className={`${inputClasses} pr-14`}
+                      className="h-12 pr-14"
                     />
                     <button
                       onClick={() => handleClearField("state")}
@@ -136,31 +139,32 @@ export default function CompanyAddressPage() {
                 </div>
               </div>
 
-              {/* Country and Pin Code Row */}
+              {/* Country (using Select) and Pin Code */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-gray-300 text-sm font-medium mb-2">Country</label>
-                  <div className="relative">
-                    <input
-                      value={formData.country}
-                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                      className={`${inputClasses} pr-14`}
-                    />
-                    <button
-                      onClick={() => handleClearField("country")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-gray-600 hover:bg-gray-500 flex items-center justify-center text-white text-sm transition-colors"
-                    >
-                      ×
-                    </button>
-                  </div>
+                  <Select
+                    value={formData.country}
+                    onValueChange={(value) => setFormData({ ...formData, country: value })}
+                  >
+                    <SelectTrigger className="h-12 w-full">
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="India">India</SelectItem>
+                      <SelectItem value="USA">USA</SelectItem>
+                      <SelectItem value="UK">UK</SelectItem>
+                      <SelectItem value="Canada">Canada</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
                   <label className="block text-gray-300 text-sm font-medium mb-2">Pin Code</label>
-                  <input
+                  <Input
                     value={formData.pinCode}
                     onChange={(e) => setFormData({ ...formData, pinCode: e.target.value })}
-                    className={inputClasses}
+                    className="h-12"
                   />
                 </div>
               </div>

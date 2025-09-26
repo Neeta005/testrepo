@@ -1,10 +1,11 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { OTPInput } from "@/components/ui/otp-input"
 
 interface OTPVerificationSectionProps {
-  otp: string[]
-  onOtpChange: (index: number, value: string) => void
+  otp: string
+  onOtpChange: (otp: string) => void
   onVerify: () => void
   isVisible: boolean
 }
@@ -22,23 +23,14 @@ export function OTPVerificationSection({ otp, onOtpChange, onVerify, isVisible }
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="flex gap-2">
-          {otp.map((digit, index) => (
-            <input
-              key={index}
-              id={`otp-${index}`}
-              type="text"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => onOtpChange(index, e.target.value)}
-              className="w-12 h-12 border-2 border-white rounded-lg text-white text-center text-lg font-semibold focus:border-red-500 focus:outline-none transition-colors bg-slate-900"
-            />
-          ))}
-        </div>
+        <OTPInput
+          length={6}
+          onComplete={onOtpChange}
+        />
 
         <Button
           onClick={onVerify}
-          disabled={otp.some((digit) => digit === "")}
+          disabled={otp.length !== 6}
           className="bg-gradient-to-r from-pink-500 to-orange-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Verify

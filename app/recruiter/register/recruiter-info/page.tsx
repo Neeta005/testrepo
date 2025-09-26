@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { PageLayout } from "@/components/layout/page-layout"
 import { RegistrationPageLayout } from "@/components/layout/registration-page-layout"
@@ -12,73 +12,73 @@ import { setRecruiterStepComplete, calcRecruiterProgressPercent } from "@/lib/pr
 
 export default function RecruiterInfoPage() {
   const router = useRouter()
+
+  // Form data state
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     mobile: "",
   })
+
+  // OTP & verification state
   const [otpSent, setOtpSent] = useState(false)
-  const [otp, setOtp] = useState(["", "", "", "", "", ""])
+  const [otp, setOtp] = useState("") // single string now
   const [isVerified, setIsVerified] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
 
+  // Request OTP
   const handleRequestOTP = () => {
     if (formData.mobile.length === 10) {
       setOtpSent(true)
     }
   }
 
-  const handleOtpChange = (index: number, value: string) => {
-    if (value.length <= 1 && /^\d*$/.test(value)) {
-      const newOtp = [...otp]
-      newOtp[index] = value
-      setOtp(newOtp)
-
-      // Auto-focus next input
-      if (value && index < 5) {
-        const nextInput = document.getElementById(`otp-${index + 1}`)
-        nextInput?.focus()
-      }
-    }
+  // Handle OTP change from OTPInput
+  const handleOtpChange = (otpString: string) => {
+    setOtp(otpString)
   }
 
+  // Verify OTP
   const handleVerify = () => {
-    if (otp.every((digit) => digit !== "")) {
+    if (otp.length === 6) {
       setIsVerified(true)
       handleFinishRegistration()
+    } else {
+      alert("Please enter the 6-digit OTP")
     }
   }
 
+  // Finish registration
   const handleFinishRegistration = () => {
     setShowSuccessModal(true)
   }
 
-  const handleGoToDashboard = () => {
-    router.push("/recruiter/dashboard")
-  }
+  // Navigation handlers
+  const handleGoToDashboard = () => router.push("/recruiter/dashboard")
+  const handleReview = () => router.push("/recruiter/register")
 
-  const handleReview = () => {
-    router.push("/recruiter/register")
-  }
-
-  // Progress calculation
+  // Calculate progress
   const requiredFields: (keyof typeof formData)[] = ["fullName", "email", "mobile"]
-  const allFilled = requiredFields.every((key) => {
-    const v = formData[key]
-    if (typeof v === "string") return v.trim().length > 0
-    return !!v
-  })
-  if (typeof window !== "undefined") {
-    setRecruiterStepComplete("recruiterInfo", allFilled)
-  }
+  const allFilled = requiredFields.every((key) => formData[key].trim().length > 0)
+
+  useEffect(() => {
+    if (typeof window !== "undefined") setRecruiterStepComplete("recruiterInfo", allFilled)
+  }, [allFilled])
+
   const percent = typeof window !== "undefined" ? calcRecruiterProgressPercent() : 0
 
   return (
     <PageLayout navigationItems={recruiterNavigationItems}>
-      <RegistrationPageLayout title="Register" currentStep={4} nextButtonText="Finish" completionPercentage={percent}>
+      <RegistrationPageLayout
+        title="Register"
+        currentStep={4}
+        nextButtonText="Finish"
+        completionPercentage={percent}
+      >
         <p className="text-md text-gray-400 mb-6">Recruiter Details</p>
 
         <div className="space-y-6">
+          {/* Contact form */}
           <ContactForm
             fullName={formData.fullName}
             email={formData.email}
@@ -97,7 +97,13 @@ export default function RecruiterInfoPage() {
             Request OTP
           </Button>
 
-          <OTPVerificationSection otp={otp} onOtpChange={handleOtpChange} onVerify={handleVerify} isVisible={otpSent} />
+          {/* OTP Verification Section */}
+          <OTPVerificationSection
+            otp={otp}
+            onOtpChange={handleOtpChange}
+            onVerify={handleVerify}
+            isVisible={otpSent}
+          />
         </div>
 
         {/* Success Modal */}

@@ -55,15 +55,15 @@ export function BasicInfoForm({ data, onChange, errors = {} }: BasicInfoFormProp
           onValueChange={(value) => updateField("numberOfOpenings", Number.parseInt(value))}
         >
           <SelectTrigger
-            className={`bg-slate-800 text-white h-12 w-full rounded-lg border px-2 ${
+            className={` text-white h-12 w-full rounded-lg border px-2 ${
               errors.numberOfOpenings ? "border-red-500" : "border-white"
             } focus:border-red-500 transition-colors`}
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-slate-800 border-slate-700 w-full">
+          <SelectContent className="text-black border-slate-700 w-full">
             {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
-              <SelectItem key={num} value={num.toString()} className="text-white">
+              <SelectItem key={num} value={num.toString()} className="text-black">
                 {num}
               </SelectItem>
             ))}

@@ -70,7 +70,7 @@ export function RegistrationPageLayout({
     <div className="max-w-7xl mx-2 px-4 lg:px-8">
       <div className="relative mb-10">
         {/* Title aligned to the left */}
-        <h1 className="text-3xl font-semibold text-white ml-20">{title}</h1>
+        <h1 className="text-3xl font-semibold text-white ml-30">{title}</h1>
 
         {/* Centered Next button */}
         <div className="absolute inset-0 flex justify-center items-center pointer-events-none">

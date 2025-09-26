@@ -1,8 +1,19 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, forwardRef } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
+import { CalendarIcon } from "lucide-react"
+
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select"
 
 interface CandidateBasicInfoContentProps {
   onCompletionChange: (completion: number) => void
@@ -13,7 +24,7 @@ interface BasicInfoData {
   firstName: string
   lastName: string
   email: string
-  dateOfBirth: string
+  dateOfBirth: Date | null
   gender: string
   address: string
   city: string
@@ -23,50 +34,71 @@ interface BasicInfoData {
   portfolioUrl: string
 }
 
-export function CandidateBasicInfoContent({ 
-  onCompletionChange, 
-  onComplete 
+export function CandidateBasicInfoContent({
+  onCompletionChange,
+  onComplete,
 }: CandidateBasicInfoContentProps) {
   const [formData, setFormData] = useState<BasicInfoData>({
     firstName: "",
     lastName: "",
     email: "",
-    dateOfBirth: "",
+    dateOfBirth: null,
     gender: "",
     address: "",
     city: "",
     state: "",
     zipCode: "",
     linkedinUrl: "",
-    portfolioUrl: ""
+    portfolioUrl: "",
   })
 
-  // Required fields for completion
   const requiredFields = [
-    'firstName', 'lastName', 'email', 'dateOfBirth', 'gender', 
-    'address', 'city', 'state', 'zipCode'
+    "firstName",
+    "lastName",
+    "email",
+    "dateOfBirth",
+    "gender",
+    "address",
+    "city",
+    "state",
+    "zipCode",
   ]
 
-  // Calculate completion percentage based only on basic info (up to 75%)
   useEffect(() => {
-    const filledRequiredFields = requiredFields.filter(field => 
-      formData[field as keyof BasicInfoData]?.trim() !== ""
-    ).length
-    
-    const totalCompletion = Math.round((filledRequiredFields / requiredFields.length) * 75)
+    const filledRequiredFields = requiredFields.filter((field) => {
+      const value = formData[field as keyof BasicInfoData]
+      return value !== null && value !== ""
+    }).length
+
+    const totalCompletion = Math.round(
+      (filledRequiredFields / requiredFields.length) * 75
+    )
     onCompletionChange(totalCompletion)
 
-    if (totalCompletion === 75 && onComplete) {
-      onComplete()
-    }
+    if (totalCompletion === 75 && onComplete) onComplete()
   }, [formData, onCompletionChange, onComplete])
 
-  const handleInputChange = (field: keyof BasicInfoData, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }))
+  const handleInputChange = (field: keyof BasicInfoData, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
+
+  // Custom Date Input using your Input component
+  const CustomDateInput = forwardRef<HTMLInputElement, any>(
+    ({ value, onClick }, ref) => (
+      <div className="relative w-full">
+        <Input
+          onClick={onClick}
+          ref={ref}
+          value={value}
+          placeholder="Select your date of birth"
+          readOnly
+          className="pr-10" // space for the calendar icon
+        />
+        <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+      </div>
+    )
+  )
+  CustomDateInput.displayName = "CustomDateInput"
 
   return (
     <div className="rounded-xl p-8 min-h-[450px] w-full max-w-4xl mx-auto space-y-8">
@@ -77,35 +109,28 @@ export function CandidateBasicInfoContent({
         </p>
       </div>
 
-      {/* Basic Information Form */}
       <div className="space-y-6">
         {/* Name Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="firstName" className="text-white">
-              First Name *
-            </Label>
+            <Label htmlFor="firstName" className="text-white">First Name *</Label>
             <Input
               id="firstName"
               type="text"
               placeholder="Enter your first name"
               value={formData.firstName}
-              onChange={(e) => handleInputChange('firstName', e.target.value)}
-              className="bg-slate-800 border border-slate-600 text-white placeholder:text-gray-400 rounded-md"
+              onChange={(e) => handleInputChange("firstName", e.target.value)}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="lastName" className="text-white">
-              Last Name *
-            </Label>
+            <Label htmlFor="lastName" className="text-white">Last Name *</Label>
             <Input
               id="lastName"
               type="text"
               placeholder="Enter your last name"
               value={formData.lastName}
-              onChange={(e) => handleInputChange('lastName', e.target.value)}
-              className="bg-slate-800 border border-slate-600 text-white placeholder:text-gray-400 rounded-md"
+              onChange={(e) => handleInputChange("lastName", e.target.value)}
               required
             />
           </div>
@@ -114,66 +139,58 @@ export function CandidateBasicInfoContent({
         {/* Email and DOB */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-white">
-              Email Address *
-            </Label>
+            <Label htmlFor="email" className="text-white">Email Address *</Label>
             <Input
               id="email"
               type="email"
               placeholder="your.email@example.com"
               value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              className="bg-slate-800 border border-slate-600 text-white placeholder:text-gray-400 rounded-md"
+              onChange={(e) => handleInputChange("email", e.target.value)}
               required
             />
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="dateOfBirth" className="text-white">
-              Date of Birth *
-            </Label>
-            <Input
-              id="dateOfBirth"
-              type="date"
-              value={formData.dateOfBirth}
-              onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-              className="bg-slate-800 border border-slate-600 text-white placeholder:text-gray-400 rounded-md"
-              required
+            <Label htmlFor="dateOfBirth" className="text-white">Date of Birth *</Label>
+            <DatePicker
+              selected={formData.dateOfBirth}
+              onChange={(date) => handleInputChange("dateOfBirth", date)}
+              customInput={<CustomDateInput />}
+              calendarClassName="bg-slate-900 text-white rounded-md"
+              dateFormat="dd/MM/yyyy"
+              wrapperClassName="w-full"
             />
           </div>
         </div>
 
         {/* Gender */}
         <div className="space-y-2">
-          <Label htmlFor="gender" className="text-white">
-            Gender *
-          </Label>
-          <select
-            id="gender"
+          <Label htmlFor="gender" className="text-white">Gender *</Label>
+          <Select
             value={formData.gender}
-            onChange={(e) => handleInputChange('gender', e.target.value)}
-            className="w-full bg-slate-800 border border-slate-600 text-white rounded-md px-4 py-3 pr-8 appearance-none"
-            required
+            onValueChange={(value) => handleInputChange("gender", value)}
           >
-            <option value="">Select your gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-            <option value="prefer-not-to-say">Prefer not to say</option>
-          </select>
+            <SelectTrigger className="w-full ">
+              <SelectValue placeholder="Select your gender" />
+            </SelectTrigger>
+            <SelectContent className="w-full bg-slate-800 text-white rounded-md">
+              <SelectItem value="male">Male</SelectItem>
+              <SelectItem value="female">Female</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+              <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Address */}
         <div className="space-y-2">
-          <Label htmlFor="address" className="text-white">
-            Address *
-          </Label>
+          <Label htmlFor="address" className="text-white">Address *</Label>
           <Input
             id="address"
             type="text"
             placeholder="Enter your full address"
             value={formData.address}
-            onChange={(e) => handleInputChange('address', e.target.value)}
-            className="bg-slate-800 border border-slate-600 text-white placeholder:text-gray-400 rounded-md"
+            onChange={(e) => handleInputChange("address", e.target.value)}
             required
           />
         </div>
@@ -181,75 +198,36 @@ export function CandidateBasicInfoContent({
         {/* City, State, ZIP */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="city" className="text-white">
-              City *
-            </Label>
+            <Label htmlFor="city" className="text-white">City *</Label>
             <Input
               id="city"
               type="text"
               placeholder="Enter your city"
               value={formData.city}
-              onChange={(e) => handleInputChange('city', e.target.value)}
-              className="bg-slate-800 border border-slate-600 text-white placeholder:text-gray-400 rounded-md"
+              onChange={(e) => handleInputChange("city", e.target.value)}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="state" className="text-white">
-              State *
-            </Label>
+            <Label htmlFor="state" className="text-white">State *</Label>
             <Input
               id="state"
               type="text"
               placeholder="Enter your state"
               value={formData.state}
-              onChange={(e) => handleInputChange('state', e.target.value)}
-              className="bg-slate-800 border border-slate-600 text-white placeholder:text-gray-400 rounded-md"
+              onChange={(e) => handleInputChange("state", e.target.value)}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="zipCode" className="text-white">
-              ZIP Code *
-            </Label>
+            <Label htmlFor="zipCode" className="text-white">ZIP Code *</Label>
             <Input
               id="zipCode"
               type="text"
               placeholder="Enter ZIP code"
               value={formData.zipCode}
-              onChange={(e) => handleInputChange('zipCode', e.target.value)}
-              className="bg-slate-800 border border-slate-600 text-white placeholder:text-gray-400 rounded-md"
+              onChange={(e) => handleInputChange("zipCode", e.target.value)}
               required
-            />
-          </div>
-        </div>
-
-        {/* Optional URLs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="linkedinUrl" className="text-white">
-              LinkedIn Profile (Optional)
-            </Label>
-            <Input
-              id="linkedinUrl"
-              type="url"
-              placeholder="https://linkedin.com/in/yourprofile"
-              value={formData.linkedinUrl}
-              onChange={(e) => handleInputChange('linkedinUrl', e.target.value)}
-              className="bg-slate-800 border border-slate-600 text-white placeholder:text-gray-400 rounded-md"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="portfolioUrl" className="text-white">
-              Portfolio URL (Optional)
-            </Label>
-            <Input
-              id="portfolioUrl"
-              type="url"
-              placeholder="https://yourportfolio.com"
-              value={formData.portfolioUrl}
-              onChange={(e) => handleInputChange('portfolioUrl', e.target.value)}
-              className="bg-slate-800 border border-slate-600 text-white placeholder:text-gray-400 rounded-md"
             />
           </div>
         </div>

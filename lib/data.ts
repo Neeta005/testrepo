@@ -17,7 +17,7 @@ export const recruiterNavigationItems = [
   { label: "Dashboard", href: "/recruiter/dashboard" },
   { label: "Candidates", href: "/recruiter/candidates" },
   { label: "Jobs", href: "/recruiter/jobs" },
-  { label: "Message", href: "/recruiter/messages" },
+  { label: "Messa", href: "/recruiter/messages" },
 ]
 
 export const registrationSteps = [

@@ -46,9 +46,7 @@ export function InterviewDetailsForm({ onDataChange }: InterviewDetailsFormProps
           onChange={(e) => handleDataChange(e.target.value)}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          className={`min-h-[200px] text-white placeholder:text-gray-400 resize-none transition-colors border-2 ${
-            focused ? "border-red-500" : "border-slate-700"
-          } focus:border-red-500 focus:ring-red-500`}
+          className={`min-h-[200px] mt-4 `}
         />
       </div>
     </div>

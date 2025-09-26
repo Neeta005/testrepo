@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -51,7 +50,9 @@ export function SkillsInput({
   }
 
   const filteredSuggestions = suggestions.filter(
-    (suggestion) => suggestion.toLowerCase().includes(inputValue.toLowerCase()) && !skills.includes(suggestion),
+    (suggestion) =>
+      suggestion.toLowerCase().includes(inputValue.toLowerCase()) &&
+      !skills.includes(suggestion)
   )
 
   return (
@@ -66,8 +67,10 @@ export function SkillsInput({
           onKeyPress={handleKeyPress}
           onFocus={() => setShowSuggestions(inputValue.length > 0)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-          className="bg-slate-800 border-red-500 text-white h-12 pr-20"
           placeholder={placeholder}
+          className={`bg-slate-800 h-12 pr-20 ${
+            error ? "border-red-500" : "border-white"
+          }`}
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
           {inputValue && (
@@ -109,7 +112,10 @@ export function SkillsInput({
               className="bg-slate-700 text-white px-3 py-1 text-sm border border-slate-600 flex items-center gap-2"
             >
               {skill}
-              <X className="h-3 w-3 cursor-pointer hover:text-red-400" onClick={() => removeSkill(skill)} />
+              <X
+                className="h-3 w-3 cursor-pointer hover:text-red-400"
+                onClick={() => removeSkill(skill)}
+              />
             </Badge>
           ))}
         </div>
