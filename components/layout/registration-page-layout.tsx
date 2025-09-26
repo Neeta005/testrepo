@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation"
 
 interface RegistrationPageLayoutProps {
   title: string
-  nextHref: string
+  nextHref?: string // Made nextHref optional
   currentStep: number
   children: ReactNode
   onPrevious?: () => void
@@ -81,13 +81,13 @@ export function RegistrationPageLayout({
             >
               {nextButtonText}
             </Button>
-          ) : (
+          ) : nextHref ? ( // Only render Link if nextHref is provided
             <Link href={nextHref}>
               <Button className="pointer-events-auto bg-gradient-to-r from-pink-500 to-orange-500 text-white font-semibold px-8 py-2 rounded-md shadow-md hover:opacity-90 transform translate-x-30">
                 {nextButtonText}
               </Button>
             </Link>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -118,11 +118,11 @@ export function RegistrationPageLayout({
             <button className="p-2 hover:bg-red-500/10 transition-colors" aria-label="Next" onClick={onNext}>
               <Image src="/images/arrowright.png" alt="Right Arrow" width={50} height={50} priority />
             </button>
-          ) : (
+          ) : nextHref ? ( // Only render Link if nextHref is provided
             <Link href={nextHref} className="p-2 hover:bg-red-500/10 transition-colors">
               <Image src="/images/arrowright.png" alt="Right Arrow" width={50} height={50} priority />
             </Link>
-          )}
+          ) : null}
         </div>
 
         {/* Step progress */}

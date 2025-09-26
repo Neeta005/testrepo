@@ -2,24 +2,24 @@
 
 import { useState } from "react"
 import { Navigation } from "@/components/ui/navigation"
-import { FileUpload } from "@/components/ui/file-upload"
-import { ProgressCircle } from "@/components/ui/progress-circle"
-import { StepIndicator } from "@/components/ui/step-indicator"
+import { FileUploadSection } from "@/components/registration/file-upload-section"
+import { RegistrationProgress } from "@/components/registration/registration-progress"
+import { useRegistrationSteps } from "@/hooks/use-registration-steps"
 import { Button } from "@/components/ui/button"
 import { candidateNavigationItems, registrationSteps } from "@/lib/data"
 
 export default function RegisterPage() {
-  const [steps, setSteps] = useState(registrationSteps)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [uploadProgress, setUploadProgress] = useState(20)
+
+  const { steps, updateStepCompletion, getProgressPercentage } = useRegistrationSteps(registrationSteps)
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file)
     console.log("Selected file:", file.name)
 
     // Update steps to mark resume as completed
-    const updatedSteps = steps.map((step) => (step.id === "resume" ? { ...step, completed: true } : step))
-    setSteps(updatedSteps)
+    updateStepCompletion("resume", true)
     setUploadProgress(40)
   }
 
@@ -28,8 +28,7 @@ export default function RegisterPage() {
     // Navigate to next registration step
   }
 
-  const completedSteps = steps.filter((step) => step.completed).length
-  const progressPercentage = Math.round((completedSteps / steps.length) * 100)
+  const progressPercentage = getProgressPercentage()
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -65,28 +64,12 @@ export default function RegisterPage() {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6">
-                <h2 className="text-xl font-semibold text-white mb-6">Upload Your Resume</h2>
-
-                <FileUpload onFileSelect={handleFileSelect} acceptedFormats={["PDF", "DOC"]} maxSize={5} />
-
-                {selectedFile && (
-                  <div className="mt-4 p-3 bg-green-500/20 border border-green-500 rounded-lg">
-                    <p className="text-green-400 text-sm">✅ File uploaded successfully: {selectedFile.name}</p>
-                  </div>
-                )}
-              </div>
+              <FileUploadSection onFileSelect={handleFileSelect} selectedFile={selectedFile} />
             </div>
 
             {/* Progress Sidebar */}
             <div className="lg:col-span-1">
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6">
-                <div className="text-center mb-6">
-                  <ProgressCircle percentage={progressPercentage} />
-                </div>
-
-                <StepIndicator steps={steps} />
-              </div>
+              <RegistrationProgress steps={steps} progressPercentage={progressPercentage} />
             </div>
           </div>
         </div>

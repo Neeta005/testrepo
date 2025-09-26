@@ -25,9 +25,9 @@ export function PageLayout({ children, navigationItems }: PageLayoutProps) {
 
       {/* Footer */}
     <footer className="mt-12 border-t border-slate-800 bg-slate-800/40 text-sm text-gray-400 relative">
-  <div className="container mx-auto px-6 py-4 flex items-center">
+  <div className=" mx-auto px-6 py-4 flex items-center">
     {/* Keep Terms + Privacy left side but with more left spacing */}
-    <div className="flex items-center space-x-2 ml-8">
+    <div className="flex items-left  ">
       <span>you agree to our</span>
       <a href="#" className="text-blue-400 hover:underline">
         Terms of use
